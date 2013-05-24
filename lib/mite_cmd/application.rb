@@ -19,80 +19,38 @@ module MiteCmd
 
     def run
       if @arguments.first == 'open'
-        open_or_echo Mite.account_url
+        open
 
       elsif @arguments.first == 'help'
-        open_or_echo 'http://github.com/Overbryd/mite.cmd'
+        help
 
       elsif @arguments.first == 'configure'
-        raise MiteCmd::Exception.new('mite configure needs two arguments, the account name and the apikey') if @arguments.size < 3 # lol boobs, err... an ice cone!
-        write_configuration({:account => @arguments[1], :apikey => @arguments[2]})
-        tell("Couldn't set up bash completion. I'm terribly frustrated. Maybe 'mite help' helps out.") unless try_to_setup_bash_completion
+        configure
 
       elsif @arguments.first == 'auto-complete'
-        autocomplete = MiteCmd::Autocomplete.new(MiteCmd.calling_script)
-        autocomplete.completion_table = if File.exist?(cache_file)
-          Marshal.load File.read(cache_file)
-        else
-          rebuild_completion_table
-        end
-        autocomplete.suggestions.map(&:quote_if_spaced).each { |s| tell s }
+        auto_complete
 
       elsif @arguments.first == 'rebuild-cache'
-        File.delete(cache_file) if File.exist? cache_file
-        rebuild_completion_table
-        tell 'The rebuilding of the cache has been done, Master. Your wish is my command.'
+        rebuild_cache
 
       elsif ['today', 'yesterday', 'this_week', 'last_week', 'this_month', 'last_month'].include? @arguments.first
-        total_minutes = 0
-        total_revenue = Mite::TimeEntry.all(:params => {:at => @arguments.first, :user_id => 'current'}).each do |time_entry|
-          total_minutes += time_entry.minutes
-          tell time_entry.inspect
-        end.map(&:revenue).compact.sum
-        tell ("%s:%.2d" % [total_minutes/60, total_minutes-total_minutes/60*60]).colorize(:lightred) + ", " + ("%.2f $" % (total_revenue/100)).colorize(:lightgreen)
+        report(@arguments.first)
 
       elsif ['stop', 'pause', 'lunch'].include? @arguments.first
-        if current_tracker = (Mite::Tracker.current ? Mite::Tracker.current.stop : nil)
-          tell current_tracker.time_entry.inspect
-        end
+        stop
 
       elsif @arguments.first == 'start'
-        if time_entry = Mite::TimeEntry.first(:params => {:at => 'today'})
-          time_entry.start_tracker
-          tell time_entry.inspect
-        else
-          tell "Oh my dear! I tried hard, but I could'nt find any time entry for today."
-        end
+        start
 
       elsif @arguments.first == 'note'
-        if time_entry = Mite::TimeEntry.first(:params => {:at => 'today'})
-          @arguments.shift
-          time_entry.note = [time_entry.note, *@arguments].compact.join(' ')
-          time_entry.save
-          tell time_entry.inspect
-        end
+        note(@arguments.drop(1))
 
       elsif (1..4).include?(@arguments.size)
-        attributes = {}
-        if time_string = @arguments.select { |a| a =~ TIME_FORMAT }.first
-          attributes[:minutes] = parse_minutes(time_string)
-          start_tracker = (time_string =~ /\+$/)
-        end
-        if project = find_or_create_project(@arguments.first)
-          attributes[:project_id] = project.id
-        end
-        if @arguments[1] && service = find_or_create_service(@arguments[1])
-          attributes[:service_id] = service.id
-        end
-        if note = parse_note(@arguments, time_string)
-          attributes[:note] = note
-        end
-        time_entry = Mite::TimeEntry.create attributes
-        time_entry.start_tracker if start_tracker
-        tell time_entry.inspect
+        create_time_entry(@arguments)
 
       elsif @arguments.size == 0
-        tell Mite::Tracker.current ? Mite::Tracker.current.inspect : flirt
+        current
+
       end
     end
 
@@ -106,6 +64,92 @@ module MiteCmd
     end
 
     private
+
+    def auto_complete
+      autocomplete = MiteCmd::Autocomplete.new(MiteCmd.calling_script)
+      autocomplete.completion_table = if File.exist?(cache_file)
+        Marshal.load File.read(cache_file)
+      else
+        rebuild_completion_table
+      end
+      autocomplete.suggestions.map(&:quote_if_spaced).each { |s| tell s }
+    end
+
+    def configure
+      raise MiteCmd::Exception.new('mite configure needs two arguments, the account name and the apikey') if @arguments.size < 3 # lol boobs, err... an ice cone!
+      write_configuration({:account => @arguments[1], :apikey => @arguments[2]})
+      tell("Couldn't set up bash completion. I'm terribly frustrated. Maybe 'mite help' helps out.") unless try_to_setup_bash_completion
+    end
+
+    def create_time_entry(arguments)
+      attributes = {}
+      if time_string = arguments.select { |a| a =~ TIME_FORMAT }.first
+        attributes[:minutes] = parse_minutes(time_string)
+        start_tracker = (time_string =~ /\+$/)
+      end
+      if project = find_or_create_project(arguments.first)
+        attributes[:project_id] = project.id
+      end
+      if @arguments[1] && service = find_or_create_service(arguments[1])
+        attributes[:service_id] = service.id
+      end
+      if note = parse_note(arguments, time_string)
+        attributes[:note] = note
+      end
+      time_entry = Mite::TimeEntry.create attributes
+      time_entry.start_tracker if start_tracker
+      tell time_entry.inspect
+    end
+
+    def current
+      tell Mite::Tracker.current ? Mite::Tracker.current.inspect : flirt
+    end
+
+    def help
+      open_or_echo 'http://github.com/Overbryd/mite.cmd'
+    end
+
+    def note(note)
+      if time_entry = Mite::TimeEntry.first(:params => {:at => 'today'})
+        time_entry.note = [time_entry.note, *note].compact.join(' ')
+        time_entry.save
+        tell time_entry.inspect
+      end
+    end
+
+    def open
+      open_or_echo Mite.account_url
+    end
+
+    def rebuild_cache
+      File.delete(cache_file) if File.exist? cache_file
+      rebuild_completion_table
+      tell 'The rebuilding of the cache has been done, Master. Your wish is my command.'
+    end
+
+    def report(timeframe)
+      total_minutes = 0
+      total_revenue = Mite::TimeEntry.all(:params => {:at => timeframe, :user_id => 'current'}).each do |time_entry|
+        total_minutes += time_entry.minutes
+        tell time_entry.inspect
+      end.map(&:revenue).compact.sum
+      tell ("%s:%.2d" % [total_minutes/60, total_minutes-total_minutes/60*60]).colorize(:lightred) + ", " + ("%.2f $" % (total_revenue/100)).colorize(:lightgreen)
+    end
+
+    def start
+      if time_entry = Mite::TimeEntry.first(:params => {:at => 'today'})
+        time_entry.start_tracker
+        tell time_entry.inspect
+      else
+        tell "Oh my dear! I tried hard, but I could'nt find any time entry for today."
+      end
+    end
+
+    def stop
+      if current_tracker = (Mite::Tracker.current ? Mite::Tracker.current.stop : nil)
+        tell current_tracker.time_entry.inspect
+      end
+    end
 
     def find_or_create_by_name(repository, name)
       object = repository.first(:params => {:name => name})
