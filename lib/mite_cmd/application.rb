@@ -36,7 +36,7 @@ module MiteCmd
 
     private
 
-    def auto_complete
+    def auto_complete(arguments)
       autocomplete = MiteCmd::Autocomplete.new(MiteCmd.calling_script)
       autocomplete.completion_table = if File.exist?(cache_file)
         Marshal.load File.read(cache_file)
@@ -46,7 +46,7 @@ module MiteCmd
       autocomplete.suggestions.map(&:quote_if_spaced).each { |s| tell s }
     end
 
-    def configure
+    def configure(arguments)
       raise MiteCmd::Exception.new('mite configure needs two arguments, the account name and the apikey') if @arguments.size < 3 # lol boobs, err... an ice cone!
       write_configuration({:account => @arguments[1], :apikey => @arguments[2]})
       tell("Couldn't set up bash completion. I'm terribly frustrated. Maybe 'mite help' helps out.") unless try_to_setup_bash_completion
@@ -76,75 +76,68 @@ module MiteCmd
       tell Mite::Tracker.current ? Mite::Tracker.current.inspect : flirt
     end
 
+    def method_for_command(command)
+      {
+        'auto-complete' => :auto_complete,
+        'configure' => :configure,
+        'help' => :help,
+        'lunch' => :stop,
+        'note' => :note,
+        'open' => :open,
+        'pause' => :stop,
+        'rebuild-cache' => :rebuild_cache,
+        'start' => :start,
+        'stop' => :stop
+      }[command]
+    end
+
     def dispatch(arguments)
-      command, *options = arguments
+      command, *arguments_for_command = arguments
+      method = method_for_command(command)
 
-      case command
-      when 'open'
-        open
-
-      when 'help'
-        help
-
-      when 'configure'
-        configure
-
-      when 'auto-complete'
-        auto_complete
-
-      when 'rebuild-cache'
-        rebuild_cache
-
-      when 'start'
-        start
-
-      when 'note'
-        note(options)
-
+      if method
+        send(method, arguments_for_command)
       else
-
         if ['today', 'yesterday', 'this_week', 'last_week', 'this_month', 'last_month'].include?(command)
           report(command)
-        elsif ['stop', 'pause', 'lunch'].include?(command)
-          stop
         else
           create_time_entry(arguments)
         end
       end
     end
 
-    def help
+    def help(arguments)
       open_or_echo 'http://github.com/Overbryd/mite.cmd'
     end
 
-    def note(note)
+    def note(arguments)
       if time_entry = Mite::TimeEntry.first(:params => {:at => 'today'})
-        time_entry.note = [time_entry.note, *note].compact.join(' ')
+        time_entry.note = [time_entry.note, *arguments].compact.join(' ')
         time_entry.save
         tell time_entry.inspect
       end
     end
 
-    def open
+    def open(arguments)
       open_or_echo Mite.account_url
     end
 
-    def rebuild_cache
+    def rebuild_cache(arguments)
       File.delete(cache_file) if File.exist? cache_file
       rebuild_completion_table
       tell 'The rebuilding of the cache has been done, Master. Your wish is my command.'
     end
 
-    def report(timeframe)
+    def report(arguments)
       total_minutes = 0
-      total_revenue = Mite::TimeEntry.all(:params => {:at => timeframe, :user_id => 'current'}).each do |time_entry|
+      total_revenue = Mite::TimeEntry.all(:params => {:at => arguments, :user_id => 'current'}).each do |time_entry|
         total_minutes += time_entry.minutes
         tell time_entry.inspect
       end.map(&:revenue).compact.sum
       tell ("%s:%.2d" % [total_minutes/60, total_minutes-total_minutes/60*60]).colorize(:lightred) + ", " + ("%.2f $" % (total_revenue/100)).colorize(:lightgreen)
     end
 
-    def start
+    def start(arguments)
       if time_entry = Mite::TimeEntry.first(:params => {:at => 'today'})
         time_entry.start_tracker
         tell time_entry.inspect
@@ -153,7 +146,7 @@ module MiteCmd
       end
     end
 
-    def stop
+    def stop(arguments)
       if current_tracker = (Mite::Tracker.current ? Mite::Tracker.current.stop : nil)
         tell current_tracker.time_entry.inspect
       end
