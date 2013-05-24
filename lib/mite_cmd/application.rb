@@ -123,7 +123,6 @@ module MiteCmd
     end
 
     def rebuild_cache(arguments)
-      File.delete(cache_file) if File.exist? cache_file
       rebuild_completion_table
       tell 'The rebuilding of the cache has been done, Master. Your wish is my command.'
     end
@@ -191,15 +190,7 @@ module MiteCmd
     end
 
     def rebuild_completion_table
-      completion_table = {
-        0 => (Mite::Project.all || []).map(&:name),
-        1 => (Mite::Service.all || []).map(&:name),
-        2 => ['0:05', '0:05+', '0:15', '0:15+', '0:30', '0:30+', '1:00', '1:00+'].map(&:quote),
-        3 => (Mite::TimeEntry.all || []).map(&:note).compact
-      }
-      File.open(cache_file, 'w') { |f| Marshal.dump(completion_table, f) }
-      File.chmod(0600, cache_file)
-      completion_table
+      MiteCmd::CompletionTable.new(cache_file).rebuild
     end
 
     def cache_file

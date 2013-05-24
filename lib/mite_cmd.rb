@@ -8,6 +8,7 @@ require 'string_ext'
 require 'mite_ext'
 require 'mite_cmd/application'
 require 'mite_cmd/autocomplete'
+require 'mite_cmd/completion_table'
 
 module MiteCmd
   BASH_COMPLETION = "complete -C \"mite auto-complete\" mite"
