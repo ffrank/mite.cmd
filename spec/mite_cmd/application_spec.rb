@@ -228,6 +228,10 @@ describe MiteCmd::Application, 'run' do
       @application.stub!(:tell)
       File.stub!(:delete)
       File.stub!(:chmod)
+
+      Mite::Project.stub!(:all).and_return []
+      Mite::Service.stub!(:all).and_return []
+      Mite::TimeEntry.stub!(:all).and_return []
     end
 
     it "should delete the file at ~/.mite.cache if it exists" do
