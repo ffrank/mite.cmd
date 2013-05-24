@@ -10,11 +10,11 @@ end
 describe MiteCmd::Autocomplete do
   before(:each) do
     @autocomplete = MiteCmd::Autocomplete.new '/usr/local/bin/test_command'
-    @autocomplete.completion_table = {
+    @autocomplete.completion_table = MiteCmd::CompletionTable.new("/tmp/mite-cmd-test", {
       0 => ['argument1', 'argument1a', 'argument1b', 'argument1c'],
       1 => ['Homer', 'Simpsons', 'Holy', 'Holy Moly', 'Holy Grail'],
       2 => ['I love spaces']
-    }
+    })
     ENV['COMP_LINE'] = "./test_command argument1 Holy \"I love spaces\""
     ENV['COMP_POINT'] = '27'
   end

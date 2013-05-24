@@ -22,6 +22,17 @@ describe MiteCmd::CompletionTable do
       table = MiteCmd::CompletionTable.new('test')
       table.path.should == 'test'
     end
+
+    it "stores values if given" do
+      table = MiteCmd::CompletionTable.new('test', {"foo" => "bar"})
+      table.values["foo"].should == "bar"
+    end
+  end
+
+  describe "#[]" do
+    it "returns value" do
+      MiteCmd::CompletionTable.new(path_to_cache_file, {"foo" => "bar"})["foo"].should == "bar"
+    end
   end
 
   describe "#rebuild" do

@@ -2,8 +2,13 @@ module MiteCmd
   class CompletionTable
     attr_reader :path
 
-    def initialize(path)
+    def initialize(path, values = nil)
       @path = path
+      @values = values
+    end
+
+    def [](key)
+      values[key]
     end
 
     # Rebuilds the cache file with updated values from Mite

@@ -38,11 +38,7 @@ module MiteCmd
 
     def auto_complete(arguments)
       autocomplete = MiteCmd::Autocomplete.new(MiteCmd.calling_script)
-      autocomplete.completion_table = if File.exist?(cache_file)
-        Marshal.load File.read(cache_file)
-      else
-        rebuild_completion_table
-      end
+      autocomplete.completion_table = MiteCmd::CompletionTable.new(cache_file)
       autocomplete.suggestions.map(&:quote_if_spaced).each { |s| tell s }
     end
 

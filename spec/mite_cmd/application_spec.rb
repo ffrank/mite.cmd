@@ -158,10 +158,7 @@ describe MiteCmd::Application, 'run' do
     end
 
     it "should unmarshal the cached completion table from ~/.mite.cache if it exists" do
-      File.stub!(:exist?).and_return true
-      File.should_receive(:read).and_return :marshal_data
-      Marshal.should_receive(:load).and_return :cached_completion_table
-      @autocomplete.should_receive(:completion_table=).with :cached_completion_table
+      @autocomplete.should_receive(:completion_table=).with instance_of(MiteCmd::CompletionTable)
       @autocomplete.stub!(:suggestions).and_return []
       @application.run
     end
@@ -183,43 +180,6 @@ describe MiteCmd::Application, 'run' do
       @application.should_receive(:tell).with(/"I need quotes"|MeNot/).exactly(2).times
       @application.run
     end
-
-    shared_examples_for 'an uncached completion table' do
-      before(:each) do
-        File.stub!(:exist?).and_return false
-
-        Mite::Project.stub!(:all).and_return [stub('project', :name => 'Demo Project')]
-        Mite::Service.stub!(:all).and_return [stub('service', :name => 'late night programming')]
-        Mite::TimeEntry.stub!(:all).and_return [stub('time entry', :note => 'shit 02:13 is really late')]
-
-        File.stub!(:open)
-        File.stub!(:chmod)
-        Marshal.stub!(:dump)
-
-        @completion_table = {
-          0 => ['Demo Project'],
-          1 => ['late night programming'],
-          2 => ['"0:05"', '"0:05+"', '"0:15"', '"0:15+"', '"0:30"', '"0:30+"', '"1:00"', '"1:00+"'],
-          3 => ['shit 02:13 is really late']
-        }
-      end
-
-      it "should create a new completion table" do
-        @application.send(:rebuild_completion_table).should == @completion_table
-      end
-
-      it "should save the new completion table to ~/.mite.cache" do
-        File.stub!(:expand_path).and_return '/tmp/.mite.cache'
-        File.should_receive(:open).with('/tmp/.mite.cache', 'w').and_yield :file_handle
-        Marshal.should_receive(:dump).with(@completion_table, :file_handle)
-        @application.run
-      end
-    end
-
-    describe 'and the completion table is not cached' do
-      it_should_behave_like 'an uncached completion table'
-    end
-
   end
 
   describe 'the rebuild-cache argument' do
@@ -235,9 +195,7 @@ describe MiteCmd::Application, 'run' do
     end
 
     it "should delete the file at ~/.mite.cache if it exists" do
-      File.stub!(:exist?).and_return true
-      File.stub!(:expand_path).and_return '/tmp/.mite.cache'
-      File.should_receive(:delete).with '/tmp/.mite.cache'
+      MiteCmd::CompletionTable.any_instance.should_receive(:rebuild)
       @application.run
     end
 
@@ -258,8 +216,6 @@ describe MiteCmd::Application, 'run' do
       File.should_receive(:chmod).with(0600, '/tmp/.mite.cache')
       @application.run
     end
-
-    it_should_behave_like 'an uncached completion table'
   end
 
   describe 'the simple report argument' do
