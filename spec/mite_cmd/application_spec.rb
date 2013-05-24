@@ -194,26 +194,13 @@ describe MiteCmd::Application, 'run' do
       Mite::TimeEntry.stub!(:all).and_return []
     end
 
-    it "should delete the file at ~/.mite.cache if it exists" do
+    it "should rebuild the completion table" do
       MiteCmd::CompletionTable.any_instance.should_receive(:rebuild)
-      @application.run
-    end
-
-    it "should not call delete on File if ~/.mite.cache does not exist" do
-      File.stub!(:exist?).and_return false
-      File.should_not_receive(:delete)
       @application.run
     end
 
     it "should tell something nice if the cache has been rebuild" do
       @application.should_receive(:tell).with 'The rebuilding of the cache has been done, Master. Your wish is my command.'
-      @application.run
-    end
-
-    it "should chmod the cache file to 0600" do
-      File.stub!(:expand_path).and_return '/tmp/.mite.cache'
-      File.stub!(:exist?).and_return true
-      File.should_receive(:chmod).with(0600, '/tmp/.mite.cache')
       @application.run
     end
   end

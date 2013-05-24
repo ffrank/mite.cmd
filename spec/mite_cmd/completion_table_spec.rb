@@ -50,6 +50,11 @@ describe MiteCmd::CompletionTable do
       values_from_disk = Marshal.load(File.read(path_to_cache_file))
       values_from_disk[0].should == ['Demo Project']
     end
+
+    it "sets file permissions" do
+      table.rebuild
+      File::Stat.new(path_to_cache_file).mode.to_s(8)[3..5].should == "600"
+    end
   end
 
   describe '#values' do
