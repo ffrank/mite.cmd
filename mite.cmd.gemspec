@@ -46,6 +46,6 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'mite-rb', '~> 0.5'
 
   s.add_development_dependency 'rake', '>= 0'
-  s.add_development_dependency 'rspec', '~> 1.3.2'
+  s.add_development_dependency 'rspec', '~> 2.13.0'
 end
 
