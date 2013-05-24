@@ -1,4 +1,4 @@
-source :rubygems
+source 'https://rubygems.org'
 
 gem 'activeresource', '~> 3.1'
 gem 'activesupport', '~> 3.1'
