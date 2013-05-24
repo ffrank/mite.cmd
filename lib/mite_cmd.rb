@@ -17,13 +17,17 @@ module MiteCmd
   mattr_accessor :calling_script
 
   def self.load_configuration
-    if File.exist?(CONFIG_FILE)
-      configuration = YAML.load(File.read(CONFIG_FILE))
+    if File.exist?(configuration_file_path)
+      configuration = YAML.load(File.read(configuration_file_path))
       Mite.account = configuration[:account]
       Mite.key = configuration[:apikey]
     else
       raise Exception.new("Configuration file is missing.")
     end
+  end
+
+  def self.configuration_file_path
+    CONFIG_FILE
   end
 
   def self.run(args)

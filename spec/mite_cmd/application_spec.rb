@@ -18,10 +18,6 @@ describe MiteCmd::Application, 'new' do
 end
 
 describe MiteCmd::Application, 'run' do
-  before(:each) do
-    MiteCmd.stub!(:load_configuration)
-  end
-
   describe 'no argument' do
     before(:each) do
       @application = MiteCmd::Application.new []
