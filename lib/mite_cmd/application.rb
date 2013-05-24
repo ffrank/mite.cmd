@@ -107,16 +107,18 @@ module MiteCmd
 
     private
 
-    def find_or_create_project(name)
-      project = Mite::Project.first(:params => {:name => name})
+    def find_or_create_by_name(repository, name)
+      object = repository.first(:params => {:name => name})
       return nil if name =~ TIME_FORMAT
-      project ? project : Mite::Project.create(:name => name)
+      object ? object : repository.create(:name => name)
+    end
+
+    def find_or_create_project(name)
+      find_or_create_by_name(Mite::Project, name)
     end
 
     def find_or_create_service(name)
-      service = Mite::Service.first(:params => {:name => name})
-      return nil if name =~ TIME_FORMAT
-      service ? service : Mite::Service.create(:name => name)
+      find_or_create_by_name(Mite::Service, name)
     end
 
     def parse_note(args, time_string)
