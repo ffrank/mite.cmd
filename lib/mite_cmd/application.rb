@@ -18,39 +18,10 @@ module MiteCmd
     end
 
     def run
-      if @arguments.first == 'open'
-        open
-
-      elsif @arguments.first == 'help'
-        help
-
-      elsif @arguments.first == 'configure'
-        configure
-
-      elsif @arguments.first == 'auto-complete'
-        auto_complete
-
-      elsif @arguments.first == 'rebuild-cache'
-        rebuild_cache
-
-      elsif ['today', 'yesterday', 'this_week', 'last_week', 'this_month', 'last_month'].include? @arguments.first
-        report(@arguments.first)
-
-      elsif ['stop', 'pause', 'lunch'].include? @arguments.first
-        stop
-
-      elsif @arguments.first == 'start'
-        start
-
-      elsif @arguments.first == 'note'
-        note(@arguments.drop(1))
-
-      elsif (1..4).include?(@arguments.size)
-        create_time_entry(@arguments)
-
-      elsif @arguments.size == 0
+      if @arguments.empty?
         current
-
+      else
+        dispatch(@arguments)
       end
     end
 
@@ -103,6 +74,43 @@ module MiteCmd
 
     def current
       tell Mite::Tracker.current ? Mite::Tracker.current.inspect : flirt
+    end
+
+    def dispatch(arguments)
+      command, *options = arguments
+
+      case command
+      when 'open'
+        open
+
+      when 'help'
+        help
+
+      when 'configure'
+        configure
+
+      when 'auto-complete'
+        auto_complete
+
+      when 'rebuild-cache'
+        rebuild_cache
+
+      when 'start'
+        start
+
+      when 'note'
+        note(options)
+
+      else
+
+        if ['today', 'yesterday', 'this_week', 'last_week', 'this_month', 'last_month'].include?(command)
+          report(command)
+        elsif ['stop', 'pause', 'lunch'].include?(command)
+          stop
+        else
+          create_time_entry(arguments)
+        end
+      end
     end
 
     def help
