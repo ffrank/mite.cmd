@@ -42,6 +42,7 @@ Gem::Specification.new do |s|
 
   s.add_runtime_dependency 'activeresource', '~> 3.1'
   s.add_runtime_dependency 'activesupport', '~> 3.1'
+  s.add_runtime_dependency 'json', '~> 1.7.7'
   s.add_runtime_dependency 'mite-rb', '~> 0.5'
 
   s.add_development_dependency 'rake', '>= 0'
