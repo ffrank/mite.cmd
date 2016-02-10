@@ -45,12 +45,15 @@ module MiteCmd
     end
 
     def values_from_api
-      {
+      result = {
         0 => project_names_from_api,
         1 => service_names_from_api,
         2 => durations,
-        3 => notes_from_api
       }
+      if MiteCmd.autocomplete_notes
+        result[3] = notes_from_api
+      end
+      result
     end
 
     def values_from_disk

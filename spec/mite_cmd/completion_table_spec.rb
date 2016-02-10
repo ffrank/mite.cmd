@@ -5,6 +5,7 @@ describe MiteCmd::CompletionTable do
     Mite::Project.stub!(:all).and_return [stub('project', :name => 'Demo Project')]
     Mite::Service.stub!(:all).and_return [stub('service', :name => 'late night programming')]
     Mite::TimeEntry.stub!(:all).and_return [stub('time entry', :note => 'shit 02:13 is really late')]
+    MiteCmd.stub!(:autocomplete_notes).and_return true
   end
 
   def path_to_cache_file
@@ -54,6 +55,21 @@ describe MiteCmd::CompletionTable do
     it "sets file permissions" do
       table.rebuild
       File::Stat.new(path_to_cache_file).mode.to_s(8)[3..5].should == "600"
+    end
+
+    context "with notes completion enabled" do
+      it "calls the notes_from_api method" do
+        table.should_receive :notes_from_api
+        table.rebuild
+      end
+    end
+
+    context "with notes completion disabled" do
+      it "does not call the notes_from_api method" do
+        MiteCmd.stub!(:autocomplete_notes).and_return false
+        table.should_not_receive :notes_from_api
+        table.rebuild
+      end
     end
   end
 

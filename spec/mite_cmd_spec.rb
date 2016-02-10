@@ -4,7 +4,7 @@ describe MiteCmd, 'load_configuration' do
   def fake_configuration
     File.stub!(:exist?).and_return true
     File.stub!(:read).and_return :yaml_data
-    YAML.stub!(:load).and_return({:account => 'demo', :apikey => '123'})
+    YAML.stub!(:load).and_return({:account => 'demo', :apikey => '123', :autocomplete_notes => false})
   end
   
   describe 'configuration file exists' do
@@ -20,6 +20,22 @@ describe MiteCmd, 'load_configuration' do
     it "should set the apikey for Mite" do
       Mite.should_receive(:key=).with '123'
       MiteCmd.load_configuration
+    end
+
+    it "should use the value for autocomplete_notes" do
+      MiteCmd.should_receive(:autocomplete_notes=).with false
+      MiteCmd.load_configuration
+    end
+
+    context "with no autocomplete_notes value" do
+      before(:each) do
+        fake_configuration
+        YAML.stub!(:load).and_return({:account => 'demo', :apikey => '123'})
+      end
+      it "should default to true" do
+        MiteCmd.should_receive(:autocomplete_notes=).with true
+        MiteCmd.load_configuration
+      end
     end
   end
 
