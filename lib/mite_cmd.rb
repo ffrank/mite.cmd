@@ -18,20 +18,32 @@ module MiteCmd
   mattr_accessor :calling_script, :autocomplete_notes, :autocomplete_always_quote
 
   def self.load_configuration
+    # defaults
+    self.autocomplete_notes = true
+    self.autocomplete_always_quote = false
+
+    begin
+      load_configuration!
+    rescue MiteCmd::Exception
+      # nothing - this variant does not raise
+    end
+  end
+
+  def self.load_configuration!
     if File.exist?(configuration_file_path)
       configuration = YAML.load(File.read(configuration_file_path))
       Mite.account = configuration[:account]
       Mite.key = configuration[:apikey]
 
-      self.autocomplete_notes = if configuration.has_key? :autocomplete_notes
-        configuration[:autocomplete_notes]
-      else
-        true
+      if configuration.has_key? :autocomplete_notes
+        self.autocomplete_notes = configuration[:autocomplete_notes]
       end
 
-      self.autocomplete_always_quote = configuration[:autocomplete_always_quote] || false
+      if configuration.has_key? :autocomplete_always_quote
+        self.autocomplete_always_quote = configuration[:autocomplete_always_quote]
+      end
     else
-      raise Exception.new("Configuration file is missing.")
+      raise MiteCmd::Exception.new("Configuration file is missing.")
     end
   end
 

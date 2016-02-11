@@ -14,7 +14,7 @@ module MiteCmd
 
     def initialize(arguments=[])
       @arguments = arguments
-      MiteCmd.load_configuration unless ['configure', 'help'].include?(arguments.first)
+      MiteCmd.load_configuration! unless ['configure', 'help'].include?(arguments.first)
     end
 
     def run
@@ -48,7 +48,13 @@ module MiteCmd
 
     def configure(arguments)
       raise MiteCmd::Exception.new('mite configure needs two arguments, the account name and the apikey') if @arguments.size < 3
-      write_configuration({:account => @arguments[1], :apikey => @arguments[2]})
+      MiteCmd.load_configuration
+
+      settings = {:account => @arguments[1], :apikey => @arguments[2]}
+      settings[:autocomplete_notes] = MiteCmd.autocomplete_notes
+      settings[:autocomplete_always_quote] = MiteCmd.autocomplete_always_quote
+      write_configuration(settings)
+
       tell("Couldn't set up bash completion. I'm terribly frustrated. Maybe 'mite help' helps out.") unless try_to_setup_bash_completion
     end
 
