@@ -6,7 +6,7 @@ end
 
 module MiteCmd
   class Application
-    TIME_FORMAT = /^(\d+(\.\d+)?:?\+?)|(\d+:\d+\+?)|\+$/
+    TIME_FORMAT = /^(\d+(\.\d+)?:?\+?)$|(\d+:\d+\+?)$|\+$/
     FLIRTS = [
       'I like your hairstyle.', 'What a nice console you have.', 'My favorite color is red on black, monospaced.',
       "What a lovely operation system this #{`uname`} is.", 'What about dinner tonight?', 'Your keystrokes are tingling.'
@@ -39,7 +39,11 @@ module MiteCmd
     def auto_complete(arguments)
       autocomplete = MiteCmd::Autocomplete.new(MiteCmd.calling_script)
       autocomplete.completion_table = MiteCmd::CompletionTable.new(cache_file)
-      autocomplete.suggestions.map(&:quote_if_spaced).each { |s| tell s }
+      if MiteCmd.autocomplete_always_quote
+        autocomplete.suggestions.map(&:quote).each { |s| tell s }
+      else
+        autocomplete.suggestions.map(&:quote_if_spaced).each { |s| tell s }
+      end
     end
 
     def configure(arguments)

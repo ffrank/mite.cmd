@@ -15,18 +15,21 @@ module MiteCmd
 
   CONFIG_FILE = File.expand_path '~/.mite.yml'
 
-  mattr_accessor :calling_script, :autocomplete_notes
+  mattr_accessor :calling_script, :autocomplete_notes, :autocomplete_always_quote
 
   def self.load_configuration
     if File.exist?(configuration_file_path)
       configuration = YAML.load(File.read(configuration_file_path))
       Mite.account = configuration[:account]
       Mite.key = configuration[:apikey]
+
       self.autocomplete_notes = if configuration.has_key? :autocomplete_notes
         configuration[:autocomplete_notes]
       else
         true
       end
+
+      self.autocomplete_always_quote = configuration[:autocomplete_always_quote] || false
     else
       raise Exception.new("Configuration file is missing.")
     end

@@ -42,7 +42,7 @@ module MiteCmd
     end
   
     def suggestions
-      completion_table[current_argument_index] ? completion_table[current_argument_index].select {|s| s =~ /^#{current_word}/i} : []
+      completion_table[current_argument_index] ? completion_table[current_argument_index].select {|s| s =~ /^#{current_word}/} : []
     end
   end
 end

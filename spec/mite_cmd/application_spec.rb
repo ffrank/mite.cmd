@@ -180,6 +180,16 @@ describe MiteCmd::Application, 'run' do
       @application.should_receive(:tell).with(/"I need quotes"|MeNot/).exactly(2).times
       @application.run
     end
+
+    it "should quote all suggestions if so configured" do
+      File.stub!(:exist?).and_return true
+      File.stub!(:read)
+      Marshal.stub!(:load)
+      MiteCmd.stub!(:autocomplete_quote_always).and_return true
+      @autocomplete.stub!(:suggestions).and_return ['I need quotes', 'MeNot']
+      @application.should_receive(:tell).with(/"I need quotes"|"MeNot"/).exactly(2).times
+      @application.run
+    end
   end
 
   describe 'the rebuild-cache argument' do

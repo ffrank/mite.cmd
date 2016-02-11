@@ -6,7 +6,7 @@ String.class_eval do
   def quote_if_spaced(q="\"")
     self =~ /\s/ ? self.quote : self
   end
-  
+
   def close_unmatched_quotes(q="\"")
     (self.scan(/"/).size % 2) != 0 ? self+q : self
   end
