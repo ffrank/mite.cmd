@@ -3,9 +3,14 @@ require 'shellwords'
 module MiteCmd
   class Autocomplete
     include Shellwords
+
+    CACHE_FILE = File.expand_path('~/.mite.cache')
     
-    attr_accessor :completion_table
     attr_reader :calling_script
+
+    def completion_table
+      @completion_table ||= MiteCmd::CompletionTable.new(CACHE_FILE)
+    end
     
     def initialize(calling_script)
       @calling_script = calling_script

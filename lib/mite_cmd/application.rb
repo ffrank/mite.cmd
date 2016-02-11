@@ -1,3 +1,5 @@
+require 'mite_cmd/autocomplete/cached.rb'
+
 if RUBY_VERSION >= '1.9'
   require 'fileutils'
 else
@@ -37,8 +39,8 @@ module MiteCmd
     private
 
     def auto_complete(arguments)
-      autocomplete = MiteCmd::Autocomplete.new(MiteCmd.calling_script)
-      autocomplete.completion_table = MiteCmd::CompletionTable.new(cache_file)
+      autocomplete = MiteCmd::Autocomplete::Cached.new(MiteCmd.calling_script)
+      #autocomplete.completion_table = MiteCmd::CompletionTable.new(cache_file)
       if MiteCmd.autocomplete_always_quote
         autocomplete.suggestions.map(&:quote).each { |s| tell s }
       else
@@ -197,10 +199,6 @@ module MiteCmd
 
     def rebuild_completion_table
       MiteCmd::CompletionTable.new(cache_file).rebuild
-    end
-
-    def cache_file
-      File.expand_path('~/.mite.cache')
     end
 
     def open_or_echo(open_argument)
