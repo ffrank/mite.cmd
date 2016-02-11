@@ -47,7 +47,7 @@ module MiteCmd
     end
 
     def configure(arguments)
-      raise MiteCmd::Exception.new('mite configure needs two arguments, the account name and the apikey') if @arguments.size < 3 # lol boobs, err... an ice cone!
+      raise MiteCmd::Exception.new('mite configure needs two arguments, the account name and the apikey') if @arguments.size < 3
       write_configuration({:account => @arguments[1], :apikey => @arguments[2]})
       tell("Couldn't set up bash completion. I'm terribly frustrated. Maybe 'mite help' helps out.") unless try_to_setup_bash_completion
     end
