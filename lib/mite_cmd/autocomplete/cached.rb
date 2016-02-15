@@ -3,7 +3,7 @@ require 'mite_cmd/autocomplete'
 class MiteCmd::Autocomplete::Cached < MiteCmd::Autocomplete
   LOOKASIDE_CACHE = File.expand_path('~/.mite.autocomplete-lookaside-buffer')
 
-  EMPTY_MARKER = '__MITE_CMD_NO_RESULT_FOR__'
+  MARKER = '__MITE_CMD_RESULT_FOR__'
 
   def current_buffer
     if ! File.exists?(LOOKASIDE_CACHE)
@@ -13,11 +13,12 @@ class MiteCmd::Autocomplete::Cached < MiteCmd::Autocomplete
   end
 
   def refresh_buffer(lines)
+    # first line always holds the marker
+    output = [ "#{MARKER}#{current_word}" ]
+
     # only one suggestion? The shell will complete this. DON'T cache!
-    if lines.length == 1
-      output = []
-    else
-      output = lines
+    if lines.length > 1
+      output += lines
     end
 
     File.open(LOOKASIDE_CACHE, "w") do |file|
@@ -28,28 +29,19 @@ class MiteCmd::Autocomplete::Cached < MiteCmd::Autocomplete
   def suggestions
     result = current_buffer
 
-    if result.length == 1 and result[0] =~ /^#{EMPTY_MARKER}/
-      if result[0].sub(/#{EMPTY_MARKER}/, '') == current_word
-        # current query yields no result: stop
-        return []
+    if result.empty?
+      result = super
+    else
+      if result[0].sub(/#{MARKER}/, '') != current_word
+        # cache miss
+        result = super
       else
-        # previous query had no result, but input changed: remove mark
-        result = []
+        # cache hit: just remove the marker line
+        result.slice!(0)
       end
     end
 
-    if result.empty?
-      result = super
-    end
-
     result.select! { |suggestion| suggestion =~ /^#{current_word}/ }
-
-    # no result after full lookup: mark as empty
-    if result.empty?
-      mark = "#{EMPTY_MARKER}#{current_word}"
-      refresh_buffer([mark])
-      return []
-    end
 
     refresh_buffer(result)
 
