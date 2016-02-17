@@ -95,7 +95,9 @@ module MiteCmd
         'pause' => :stop,
         'rebuild-cache' => :rebuild_cache,
         'start' => :start,
-        'stop' => :stop
+        'stop' => :stop,
+        'add' => :create_time_entry,
+        'report' => :report,
       }[command]
     end
 
@@ -106,16 +108,17 @@ module MiteCmd
       if method
         send(method, arguments_for_command)
       else
-        if ['today', 'yesterday', 'this_week', 'last_week', 'this_month', 'last_month'].include?(command)
-          report(command)
-        else
-          create_time_entry(arguments)
-        end
+        help(nil)
       end
     end
 
     def help(arguments)
-      open_or_echo 'http://github.com/Overbryd/mite.cmd'
+      puts <<-EOH
+usage: mite <command> [arguments]
+
+available commands:
+  TODO
+      EOH
     end
 
     def note(arguments)

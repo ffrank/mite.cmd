@@ -47,7 +47,14 @@ module MiteCmd
     end
   
     def suggestions
-      completion_table[current_argument_index] ? completion_table[current_argument_index].select {|s| s =~ /^#{current_word}/} : []
+      if current_argument_index == 0
+# TODO: complete commands
+        []
+      elsif args.size > 0 and args[0] == "add"
+        completion_table[current_argument_index-1] ? completion_table[current_argument_index-1].select {|s| s =~ /^#{current_word}/} : []
+      else
+        []
+      end
     end
   end
 end
