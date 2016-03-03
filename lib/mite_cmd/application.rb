@@ -16,6 +16,7 @@ module MiteCmd
 
     def initialize(arguments=[])
       @arguments = arguments
+      @default_attributes = {}
       MiteCmd.load_configuration! unless ['configure', 'help'].include?(arguments.first)
     end
 
@@ -61,7 +62,12 @@ module MiteCmd
     end
 
     def create_time_entry(arguments)
-      attributes = {}
+      time_entry = prepare_time_entry(arguments)
+      time_entry.save
+    end
+
+    def prepare_time_entry(arguments)
+      attributes = @default_attributes
       if time_string = arguments.select { |a| a =~ TIME_FORMAT }.first
         attributes[:minutes] = parse_minutes(time_string)
         start_tracker = (time_string =~ /\+$/)
@@ -75,9 +81,10 @@ module MiteCmd
       if note = parse_note(arguments, time_string)
         attributes[:note] = note
       end
-      time_entry = Mite::TimeEntry.create attributes
+      time_entry = Mite::TimeEntry.new attributes
       time_entry.start_tracker if start_tracker
       tell time_entry.inspect
+      time_entry
     end
 
     def current
@@ -98,12 +105,17 @@ module MiteCmd
         'stop' => :stop,
         'add' => :create_time_entry,
         'report' => :report,
+        'preview' => :prepare_time_entry,
       }[command]
     end
 
     def dispatch(arguments)
       command, *arguments_for_command = arguments
       method = method_for_command(command)
+
+      if command == 'preview'
+        @default_attributes = { 'revenue' => 0.0 }
+      end
 
       if method
         send(method, arguments_for_command)
