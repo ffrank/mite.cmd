@@ -18,9 +18,9 @@ Mite::TimeEntry.class_eval do
   def inspect
     output = []
     output << formatted_time.colorize(tracking? ? :lightyellow : :lightred)
-    output << formatted_revenue.colorize(:lightgreen) if revenue
-    output << "\tdoing #{service.name}" if service
-    output << "\tfor #{project.name}" if project
+    output << formatted_revenue.colorize(:lightgreen) if self.respond_to?(:revenue) && revenue
+    output << "\tdoing " + service.name.colorize(:blue) if service
+    output << "\tfor " + project.name.colorize(:blue) if project
     output << "\n\t\t|_ #{note}" unless note.blank?
     output.join(' ')
   end

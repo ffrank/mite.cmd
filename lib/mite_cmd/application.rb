@@ -165,7 +165,7 @@ available commands:
       total_minutes = 0
       total_revenue = Mite::TimeEntry.all(:params => {:at => report_date, :user_id => 'current'}).each do |time_entry|
         total_minutes += time_entry.minutes
-        tell "%4d %s" % [ count, time_entry.inspect ]
+        tell "%3d %s" % [ count, time_entry.inspect ]
         count += 1
       end.map(&:revenue).compact.sum
       tell ("     %s:%.2d" % [total_minutes/60, total_minutes-total_minutes/60*60]).colorize(:lightred) + ", " + ("%.2f $" % (total_revenue/100)).colorize(:lightgreen)
@@ -179,7 +179,7 @@ available commands:
       destroy_date = @date || 'today'
 
       entries = Mite::TimeEntry.all(:params => {:at => destroy_date, :user_id => 'current'})
-      tell "%4d %s" % [ destroy_index, entries[destroy_index].inspect ]
+      tell "%3d %s" % [ destroy_index, entries[destroy_index].inspect ]
       if @confirmed
         entries[destroy_index].destroy
         tell "the above entry has been permanently removed".colorize(:red)
