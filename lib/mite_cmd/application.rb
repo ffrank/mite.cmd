@@ -9,10 +9,6 @@ end
 module MiteCmd
   class Application
     TIME_FORMAT = /^(\d+(\.\d+)?:?\+?)$|(\d+:\d+\+?)$|\+$/
-    FLIRTS = [
-      'I like your hairstyle.', 'What a nice console you have.', 'My favorite color is red on black, monospaced.',
-      "What a lovely operation system this #{`uname`} is.", 'What about dinner tonight?', 'Your keystrokes are tingling.'
-    ]
 
     def initialize(arguments=[])
       @arguments = arguments
@@ -32,10 +28,6 @@ module MiteCmd
       puts what
     end
     alias_method :tell, :say
-
-    def flirt
-      FLIRTS[rand(FLIRTS.size)]
-    end
 
     private
 
@@ -88,7 +80,7 @@ module MiteCmd
     end
 
     def current
-      tell Mite::Tracker.current ? Mite::Tracker.current.inspect : flirt
+      tell Mite::Tracker.current ? Mite::Tracker.current.inspect : "No current entry"
     end
 
     def method_for_command(command)
