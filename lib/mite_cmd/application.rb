@@ -145,8 +145,23 @@ available commands:
     end
 
     def report(arguments)
+      if arguments.length > 1
+        raise MiteCmd::Exception.new "The report subcommand takes exactly one argument with a time specification"
+      elsif arguments.length == 1
+        report_date = arguments[0]
+      end
+
+      if @date
+        if report_date
+          tell "warning: ignoring report argument '#{arguments[0]}' in favor of date parameter '#{@date}'".colorize(:yellow)
+        end
+        report_date = @date
+      end
+
+      report_date ||= "today"
+
       total_minutes = 0
-      total_revenue = Mite::TimeEntry.all(:params => {:at => arguments, :user_id => 'current'}).each do |time_entry|
+      total_revenue = Mite::TimeEntry.all(:params => {:at => report_date, :user_id => 'current'}).each do |time_entry|
         total_minutes += time_entry.minutes
         tell time_entry.inspect
       end.map(&:revenue).compact.sum
