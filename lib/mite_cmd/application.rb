@@ -100,6 +100,7 @@ module MiteCmd
         'add' => :create_time_entry,
         'report' => :report,
         'preview' => :prepare_time_entry,
+        'delete' => :destroy_time_entry,
       }[command]
     end
 
@@ -160,12 +161,31 @@ available commands:
 
       report_date ||= "today"
 
+      count = 0
       total_minutes = 0
       total_revenue = Mite::TimeEntry.all(:params => {:at => report_date, :user_id => 'current'}).each do |time_entry|
         total_minutes += time_entry.minutes
-        tell time_entry.inspect
+        tell "%4d %s" % [ count, time_entry.inspect ]
+        count += 1
       end.map(&:revenue).compact.sum
-      tell ("%s:%.2d" % [total_minutes/60, total_minutes-total_minutes/60*60]).colorize(:lightred) + ", " + ("%.2f $" % (total_revenue/100)).colorize(:lightgreen)
+      tell ("     %s:%.2d" % [total_minutes/60, total_minutes-total_minutes/60*60]).colorize(:lightred) + ", " + ("%.2f $" % (total_revenue/100)).colorize(:lightgreen)
+    end
+
+    def destroy_time_entry(arguments)
+      if arguments.length != 1
+        raise MiteCmd::Exception.new "The delete subcommand takes exactly one argument with a numeric index"
+      end
+      destroy_index = arguments[0].to_i
+      destroy_date = @date || 'today'
+
+      entries = Mite::TimeEntry.all(:params => {:at => destroy_date, :user_id => 'current'})
+      tell "%4d %s" % [ destroy_index, entries[destroy_index].inspect ]
+      if @confirmed
+        entries[destroy_index].destroy
+        tell "the above entry has been permanently removed".colorize(:red)
+      else
+        tell "not destroying the specified entry, add --really to confirm".colorize(:yellow)
+      end
     end
 
     def start(arguments)
