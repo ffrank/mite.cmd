@@ -1,4 +1,5 @@
 require 'mite_cmd/autocomplete/cached.rb'
+require 'optparse'
 
 if RUBY_VERSION >= '1.9'
   require 'fileutils'
@@ -11,6 +12,7 @@ module MiteCmd
     TIME_FORMAT = /^(\d+(\.\d+)?:?\+?)$|(\d+:\d+\+?)$|\+$/
 
     def initialize(arguments=[])
+      option_parser.parse!(arguments)
       @arguments = arguments
       @default_attributes = {}
       MiteCmd.load_configuration! unless ['configure', 'help'].include?(arguments.first)
@@ -235,6 +237,15 @@ available commands:
         end
       end
       return false
+    end
+
+    def option_parser
+      OptionParser.new do |opts|
+        opts.on("-d", "--date DATE",
+                "Create or report on specific day, e.g. today, yesterday, YYYY-MM-DD, ...") { |arg| @date = arg }
+        opts.on("-x", "--really",
+                "Confirm destructive actions such as delete") { |arg| @confirmed = arg }
+      end
     end
 
   end
