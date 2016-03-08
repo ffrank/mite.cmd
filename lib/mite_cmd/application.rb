@@ -62,23 +62,56 @@ module MiteCmd
 
     def prepare_time_entry(arguments)
       attributes = @default_attributes
-      if time_string = arguments.select { |a| a =~ TIME_FORMAT }.first
-        attributes[:minutes] = parse_minutes(time_string)
-        start_tracker = (time_string =~ /\+$/)
+      if @date
+        attributes[:at] = @date
       end
-      if project = find_or_create_project(arguments.first)
-        attributes[:project_id] = project.id
+
+      begin
+        attributes = fill_in_time_entry_attributes!(arguments)
+      rescue MiteCmd::Exception => e
+        help arguments
+        raise e
       end
-      if @arguments[1] && service = find_or_create_service(arguments[1])
-        attributes[:service_id] = service.id
+
+      if attributes[:_start_tracker]
+        start_tracker = true
+        attributes.delete :_start_tracker
       end
-      if note = parse_note(arguments, time_string)
-        attributes[:note] = note
-      end
+
       time_entry = Mite::TimeEntry.new attributes
       time_entry.start_tracker if start_tracker
       tell time_entry.inspect
       time_entry
+    end
+
+    def fill_in_time_entry_attributes!(arguments)
+      attributes = {}
+
+      if arguments[0] =~ TIME_FORMAT
+        time_string = arguments[0]
+        attributes[:minutes] = parse_minutes(time_string)
+        if time_string =~ /\+$/
+          attributes[:_start_tracker] = true
+        end
+      else
+        raise MiteCmd::Exception.new "the first argument to 'mite add' must be a time specification"
+      end
+
+      if project = find_or_create_project(arguments[1])
+        attributes[:project_id] = project.id
+      end
+      if @arguments[2] && service = find_or_create_service(arguments[2])
+        attributes[:service_id] = service.id
+      end
+      if note = arguments[3..-1] * " "
+        attributes[:note] = note
+      end
+
+      if !project.id || !service.id || !note
+        raise "missing project/service/note"
+      end
+
+      attributes
     end
 
     def current
