@@ -7,6 +7,7 @@ require 'mite-rb'
 require 'string_ext'
 require 'mite_ext'
 require 'mite_cmd/application'
+require 'mite_cmd/application/main'
 require 'mite_cmd/autocomplete'
 require 'mite_cmd/completion_table'
 
@@ -52,7 +53,7 @@ module MiteCmd
   end
 
   def self.run(args)
-    Application.new(args).run
+    Application::Main.new(args).run
   end
 
   class Exception < StandardError; end
