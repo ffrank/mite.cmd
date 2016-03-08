@@ -2,7 +2,9 @@ module MiteCmd
   class CompletionTable
     attr_reader :path
 
-    def initialize(path, values = nil)
+    DEFAULT_CACHE_FILE=File.expand_path('~/.mite.cache')
+
+    def initialize(path = DEFAULT_CACHE_FILE, values = nil)
       @path = path
       @values = values
     end

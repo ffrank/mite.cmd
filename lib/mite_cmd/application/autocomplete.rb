@@ -19,7 +19,7 @@ module MiteCmd
     end
 
     def rebuild_completion_table
-      MiteCmd::CompletionTable.new(cache_file).rebuild
+      MiteCmd::CompletionTable.new.rebuild
     end
 
     def try_to_setup_bash_completion
