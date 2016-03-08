@@ -49,7 +49,7 @@ module MiteCmd::Application
       tell("Couldn't set up bash completion. I'm terribly frustrated. Maybe 'mite help' helps out.") unless try_to_setup_bash_completion
     end
 
-    def method_for_command(command)
+    def self.method_list
       {
         'auto-complete' => :auto_complete,
         'configure' => :configure,
@@ -65,7 +65,15 @@ module MiteCmd::Application
         'report' => :report,
         'preview' => :prepare_time_entry,
         'delete' => :destroy_time_entry,
-      }[command]
+      }
+    end
+
+    def self.command_list
+      method_list.keys
+    end
+
+    def method_for_command(command)
+      self.class.method_list[command]
     end
 
     def dispatch(arguments)
