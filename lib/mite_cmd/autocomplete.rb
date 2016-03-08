@@ -49,11 +49,15 @@ module MiteCmd
     def suggestions
       if current_argument_index == 0
         MiteCmd::Application::Main.command_list
-      elsif args.size > 0 and args[0] == "add"
+      elsif args.size > 0 and args[0] == "add" || args[0] == "preview"
         completion_table[current_argument_index-1] ? completion_table[current_argument_index-1].select {|s| s =~ /^#{current_word}/} : []
       else
         []
       end
+    end
+
+    def user_supplied?
+      args.size > 1 and current_argument_index > 1 and args[0] == "add" || args[0] == "preview"
     end
   end
 end

@@ -6,11 +6,15 @@ module MiteCmd
     def auto_complete(arguments)
       autocomplete = MiteCmd::Autocomplete::Cached.new(MiteCmd.calling_script)
       #autocomplete.completion_table = MiteCmd::CompletionTable.new(cache_file)
-      if MiteCmd.autocomplete_always_quote
-        autocomplete.suggestions.map(&:quote).each { |s| tell s }
-      else
-        autocomplete.suggestions.map(&:quote_if_spaced).each { |s| tell s }
+      result = autocomplete.suggestions
+      if autocomplete.user_supplied?
+        if MiteCmd.autocomplete_always_quote
+          result.map!(&:quote)
+        else
+          result.map!(&:quote_if_spaced)
+        end
       end
+      result.each { |s| tell s }
     end
 
     def rebuild_cache(arguments)
