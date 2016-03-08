@@ -29,7 +29,7 @@ module MiteCmd
     end
 
     def durations
-      ['0:05', '0:05+', '0:15', '0:15+', '0:30', '0:30+', '1:00', '1:00+'].map(&:quote)
+      ['0:05', '0:15', '0:30', '1:00', '1:30'].map(&:quote)
     end
 
     def notes_from_api
@@ -46,9 +46,9 @@ module MiteCmd
 
     def values_from_api
       result = {
-        0 => project_names_from_api,
-        1 => service_names_from_api,
-        2 => durations,
+        0 => durations,
+        1 => project_names_from_api,
+        2 => service_names_from_api,
       }
       if MiteCmd.autocomplete_notes
         result[3] = notes_from_api
