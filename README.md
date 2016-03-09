@@ -2,9 +2,9 @@
 
 A simple command line interface for basic mite tasks.
 
-* @mite.@ is an ingeniously sleek time tracking tool: http://mite.yo.lk
-* @mite.cmd@ is a command line interface for it: http://github.com/Overbryd/mite.cmd
-  It provides a system wide command called @mite@.
+* `mite.` is an ingeniously sleek time tracking tool: http://mite.yo.lk
+* `mite.cmd` is a command line interface for it: http://github.com/Overbryd/mite.cmd
+  It provides a system wide command called `mite`.
 
 ### About this branch
 
@@ -31,7 +31,7 @@ e.g.
 
 It will then generate a yml file in ~/.mite.yml with your account information.
 
-The configure command also tries to install the bash auto completion hook into the following files: @~/.bash_completion@, @~/.bash_profile@, @~/.bash_login@, @~/.bashrc@.
+The configure command also tries to install the bash auto completion hook into the following files: `~/.bash_completion`, `~/.bash_profile`, `~/.bash_login`, `~/.bashrc`.
 
 If your system doesn't support one of the files above, install the hook by yourself.
 In order to work as expected it needs bash to be configured for auto completion.
@@ -61,7 +61,7 @@ The time entry created by this command, is made for the project HugEveryone and 
   
     $ mite add 1+ HugEveryone Love
 
-Start a time entry for the project HugEveryone with the service Love and set it to 1 hour. The tracker will be started, because of the @start time@ argument was suffixed with a @+@.
+Start a time entry for the project HugEveryone with the service Love and set it to 1 hour. The tracker will be started, because of the `start time` argument was suffixed with a `+`.
 
 ### Auto-completion:
 
@@ -111,7 +111,7 @@ This will generate a report of today's activity, summarizing your earnings at th
     $ mite report yesterday
 
 This will generate a report of yesterday's activity, summarizing your earnings and the total time at the bottom.
-Also works using @this_week@, @last_week@, @this_month@, @last_month@ as argument.
+Also works using `this_week`, `last_week`, `this_month`, `last_month` as argument.
 
 ### More simple stuff:
 
