@@ -148,7 +148,7 @@ module MiteCmd
         time_entry.start_tracker
         tell time_entry.inspect
       else
-        tell "Oh my dear! I tried hard, but I could'nt find any time entry for today."
+        tell "could'nt find any time entry for today"
       end
     end
 

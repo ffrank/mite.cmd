@@ -44,7 +44,7 @@ module MiteCmd::Application
       settings[:autocomplete_always_quote] = MiteCmd.autocomplete_always_quote
       write_configuration(settings)
 
-      tell("Couldn't set up bash completion. I'm terribly frustrated. Maybe 'mite help' helps out.") unless try_to_setup_bash_completion
+      tell("Couldn't set up bash completion.") unless try_to_setup_bash_completion
     end
 
     def self.method_list

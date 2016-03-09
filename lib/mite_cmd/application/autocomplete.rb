@@ -19,7 +19,7 @@ module MiteCmd
 
     def rebuild_cache(arguments)
       rebuild_completion_table
-      tell 'The rebuilding of the cache has been done, Master. Your wish is my command.'
+      tell 'Cache rebuild complete.'
     end
 
     def rebuild_completion_table
