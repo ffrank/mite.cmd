@@ -49,21 +49,73 @@ module MiteCmd::Application
 
     def self.method_list
       {
-        'auto-complete' => :auto_complete,
-        'configure' => :configure,
-        'help' => :help,
-        'lunch' => :stop,
-        'note' => :note,
-        'open' => :open,
-        'pause' => :stop,
-        'rebuild-cache' => :rebuild_cache,
-        'start' => :start,
-        'stop' => :stop,
-        'add' => :create_time_entry,
-        'report' => :report,
-        'preview' => :prepare_time_entry,
-        'delete' => :destroy_time_entry,
-        'reword' => :reword_time_entry,
+        'auto-complete' => {
+          :method => :auto_complete,
+          :description => "not for direct use, only called from bash for tab-completion",
+        },
+        'configure' => {
+          :method => :configure,
+          :arguments => %w{apikey user},
+          :description => "create .mite.yml file with required basic settings",
+        },
+        'help' => {
+          :method => :help,
+          :description => "show help and exit",
+        },
+        'lunch' => {
+          :method => :stop,
+          :description => "halt active time tracker (same as stop)",
+        },
+        'note' => {
+          :method => :note,
+          :arguments => %w{message ...},
+          :description => "create initial time entry",
+        },
+        'open' => {
+          :method => :open,
+          :description => "visit your mite interface with your browser",
+        },
+        'pause' => {
+          :method => :stop,
+          :description => "halt active time tracker (same as stop)",
+        },
+        'rebuild-cache' => {
+          :method => :rebuild_cache,
+          :description => "sync local cache of projects/services for tab-completion",
+        },
+        'start' => {
+          :method => :start,
+          :description => "start active time tracker",
+        },
+        'stop' => {
+          :method => :stop,
+          :description => "halt active time tracker",
+        },
+        'add' => {
+          :method => :create_time_entry,
+          :arguments => %w{time project service [notes [...]]},
+          :description => "create new time entry",
+        },
+        'preview' => {
+          :method => :prepare_time_entry,
+          :arguments => %{time project service [notes [...]]},
+          :description => "same as 'add', but don't persist entry to server yet",
+        },
+        'delete' => {
+          :method => :destroy_time_entry,
+          :arguments => %w{index},
+          :description => "delete time entry with specified numeric index",
+        },
+        'reword' => {
+          :method => :reword_time_entry,
+          :arguments => %w{index notes ...},
+          :description => "change message in entry with numeric index",
+        },
+        'report' => {
+          :method => :report,
+          :arguments => %w{[time-frame]},
+          :description => "show report for 'today', 'yesterday', 'last_week', 'last_month' or 'YYYY-MM-DD'",
+        },
       }
     end
 
@@ -72,7 +124,14 @@ module MiteCmd::Application
     end
 
     def method_for_command(command)
-      self.class.method_list[command]
+      self.class.method_list[command][:method]
+    end
+
+    def command_description_list
+      self.class.method_list.map do |command,info|
+        info[:arguments] ||= []
+        "%s %s\n    %s" % [ command, [ info[:arguments] ].flatten * " ", info[:description] ]
+      end
     end
 
     def dispatch(arguments)
@@ -95,7 +154,7 @@ module MiteCmd::Application
 usage: mite <command> [arguments]
 
 available commands:
-  TODO
+#{command_description_list * "\n"}
       EOH
     end
 
