@@ -125,6 +125,32 @@ module MiteCmd
       end
     end
 
+    def reword_time_entry(arguments)
+      if arguments.length < 2
+        raise MiteCmd::Exception.new "The reword subcommand takes one argument with a numeric index, and the new note"
+      end
+      reword_index = arguments[0].to_i
+      reword_date = @date || 'today'
+
+      entries = Mite::TimeEntry.all(:params => {:at => reword_date, :user_id => 'current'})
+      unless entry = entries[reword_index]
+        raise MiteCmd::Exception.new "Found no entry with index #{reword_index} to reword"
+      end
+
+      tell "Rewording the following entry".colorize(:green)
+      tell "%3d %s" % [ reword_index, entry.inspect ]
+
+      entry.note = arguments[1..-1] * " "
+      tell "into the following".colorize(:green)
+      tell "%3d %s" % [ reword_index, entry.inspect ]
+
+      if @confirmed
+        entry.save
+      else
+        tell "not actually rewording the specified entry yet, add --really to confirm".colorize(:yellow)
+      end
+    end
+
     def start(arguments)
       if time_entry = Mite::TimeEntry.first(:params => {:at => 'today'})
         time_entry.start_tracker

@@ -63,6 +63,7 @@ module MiteCmd::Application
         'report' => :report,
         'preview' => :prepare_time_entry,
         'delete' => :destroy_time_entry,
+        'reword' => :reword_time_entry,
       }
     end
 
