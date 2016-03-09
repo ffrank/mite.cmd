@@ -5,7 +5,7 @@ module MiteCmd
 
     def create_time_entry(arguments)
       time_entry = prepare_time_entry(arguments)
-      time_entry.save
+      time_entry.save unless @noop
     end
 
     def prepare_time_entry(arguments)

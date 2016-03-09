@@ -14,10 +14,10 @@ module MiteCmd::Application
     include MiteCmd::Application::TimeEntries
 
     def initialize(arguments=[])
+      MiteCmd.load_configuration! unless ['configure', 'help'].include?(arguments.first)
       option_parser.parse!(arguments)
       @arguments = arguments
       @default_attributes = {}
-      MiteCmd.load_configuration! unless ['configure', 'help'].include?(arguments.first)
     end
 
     def run
@@ -37,6 +37,8 @@ module MiteCmd::Application
 
     def configure(arguments)
       MiteCmd.load_configuration
+      option_parser.parse!(arguments) # again, in case configuration is being overridden
+
       raise MiteCmd::Exception.new('mite configure needs two arguments, the account name and the apikey') if arguments.size < 2
 
       settings = {:account => arguments[0], :apikey => arguments[1]}
@@ -178,6 +180,14 @@ module MiteCmd::Application
                 "Create or report on specific day, e.g. today, yesterday, YYYY-MM-DD, ...") { |arg| @date = arg }
         opts.on("-x", "--really",
                 "Confirm destructive actions such as delete") { |arg| @confirmed = arg }
+        opts.on("-n", "--noop",
+                "Noop mode. Only useful with 'mite add', basically turning it into 'mite preview'.") { |arg| @noop = true }
+        opts.on("-c", "--[no-]color",
+                "Use terminal colors. (See :colorize in .mite.yml)") { |arg| MiteCmd.colorize = arg }
+        opts.on("-N", "--[no-]autocomplete-notes",
+                "Whether notes should be downloaded to the tab-completion cache. Only useful with 'mite configure'.") { |arg| MiteCmd.autocomplete_notes = arg }
+        opts.on("-Q", "--[no-]autocomplete-always-quote",
+                "Whether projects and services should always be quoted for tab-completion. Only useful with 'mite configure'.") { |arg| MiteCmd.autocomplete_always_quote = arg }
       end
     end
 
