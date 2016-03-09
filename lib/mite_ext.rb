@@ -21,7 +21,7 @@ Mite::TimeEntry.class_eval do
     output << formatted_revenue.colorize(:lightgreen) if self.respond_to?(:revenue) && revenue
     output << "\tdoing " + service.name.colorize(:blue) if service
     output << "\tfor " + project.name.colorize(:blue) if project
-    output << "\n\t\t|_ #{note}" unless note.blank?
+    output << "\n\t\t|_ " + "[ #{date_at} ]".colorize(:green) + " " + note unless note.blank?
     output.join(' ')
   end
   
