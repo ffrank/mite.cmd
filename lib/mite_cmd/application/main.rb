@@ -36,15 +36,16 @@ module MiteCmd::Application
     private
 
     def configure(arguments)
-      raise MiteCmd::Exception.new('mite configure needs two arguments, the account name and the apikey') if @arguments.size < 3
       MiteCmd.load_configuration
+      raise MiteCmd::Exception.new('mite configure needs two arguments, the account name and the apikey') if arguments.size < 2
 
-      settings = {:account => @arguments[1], :apikey => @arguments[2]}
+      settings = {:account => arguments[0], :apikey => arguments[1]}
       settings[:autocomplete_notes] = MiteCmd.autocomplete_notes
       settings[:autocomplete_always_quote] = MiteCmd.autocomplete_always_quote
+      settings[:colorize] = MiteCmd.colorize
       write_configuration(settings)
 
-      tell("Couldn't set up bash completion.") unless try_to_setup_bash_completion
+      tell("warning: ouldn't set up bash completion".colorize(:yellow)) unless try_to_setup_bash_completion
     end
 
     def self.method_list
