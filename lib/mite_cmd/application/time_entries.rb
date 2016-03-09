@@ -10,11 +10,11 @@ module MiteCmd
     def prepare_time_entry(arguments)
       attributes = @default_attributes
       if @date
-        attributes[:at] = @date
+        attributes[:date_at] = @date
       end
 
       begin
-        attributes = fill_in_time_entry_attributes!(arguments)
+        attributes.merge! fill_in_time_entry_attributes!(arguments)
       rescue MiteCmd::Exception => e
         help arguments
         raise e
@@ -34,7 +34,7 @@ module MiteCmd
     def fill_in_time_entry_attributes!(arguments)
       attributes = {}
 
-      if arguments[0] =~ TIME_FORMAT
+      if arguments[0] =~ MiteCmd::Application::TIME_FORMAT
         time_string = arguments[0]
         attributes[:minutes] = parse_minutes(time_string)
         if time_string =~ /\+$/
@@ -125,7 +125,7 @@ module MiteCmd
 
     def find_or_create_by_name(repository, name)
       object = repository.first(:params => {:name => name})
-      return nil if name =~ TIME_FORMAT
+      return nil if name =~ MiteCmd::Application::TIME_FORMAT
       object ? object : repository.create(:name => name)
     end
 

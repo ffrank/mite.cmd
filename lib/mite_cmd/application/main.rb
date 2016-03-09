@@ -13,8 +13,6 @@ module MiteCmd::Application
     include MiteCmd::Application::AutoComplete
     include MiteCmd::Application::TimeEntries
 
-    TIME_FORMAT = /^(\d+(\.\d+)?:?\+?)$|(\d+:\d+\+?)$|\+$/
-
     def initialize(arguments=[])
       option_parser.parse!(arguments)
       @arguments = arguments
