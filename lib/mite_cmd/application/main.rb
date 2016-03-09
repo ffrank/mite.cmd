@@ -123,5 +123,15 @@ available commands:
       end
     end
 
+    def ask_for_confirmation(message)
+      if @confirmed
+        yield
+        true
+      else
+        tell "#{message} - add --really to confirm".colorize(:yellow)
+        false
+      end
+    end
+
   end
 end

@@ -108,46 +108,38 @@ module MiteCmd
       tell ("     %s:%.2d" % [total_minutes/60, total_minutes-total_minutes/60*60]).colorize(:lightred) + ", " + ("%.2f $" % (total_revenue/100)).colorize(:lightgreen)
     end
 
-    def destroy_time_entry(arguments)
-      if arguments.length != 1
-        raise MiteCmd::Exception.new "The delete subcommand takes exactly one argument with a numeric index"
-      end
-      destroy_index = arguments[0].to_i
-      destroy_date = @date || 'today'
+    def get_indexed_entry(index)
+      date = @date || 'today'
 
-      entries = Mite::TimeEntry.all(:params => {:at => destroy_date, :user_id => 'current'})
-      tell "%3d %s" % [ destroy_index, entries[destroy_index].inspect ]
-      if @confirmed
-        entries[destroy_index].destroy
+      entries = Mite::TimeEntry.all(:params => {:at => date, :user_id => 'current'})
+      unless entry = entries[index]
+        raise MiteCmd::Exception.new "Found no entry with index #{reword_index} to reword"
+      end
+      entry
+    end
+
+    def destroy_time_entry(arguments)
+      entry = get_indexed_entry(arguments.shift.to_i)
+
+      tell entry.inspect
+
+      ask_for_confirmation "not destroying the specified entry" do
+        entry.destroy
         tell "the above entry has been permanently removed".colorize(:red)
-      else
-        tell "not destroying the specified entry, add --really to confirm".colorize(:yellow)
       end
     end
 
     def reword_time_entry(arguments)
-      if arguments.length < 2
-        raise MiteCmd::Exception.new "The reword subcommand takes one argument with a numeric index, and the new note"
-      end
-      reword_index = arguments[0].to_i
-      reword_date = @date || 'today'
-
-      entries = Mite::TimeEntry.all(:params => {:at => reword_date, :user_id => 'current'})
-      unless entry = entries[reword_index]
-        raise MiteCmd::Exception.new "Found no entry with index #{reword_index} to reword"
-      end
+      entry = get_indexed_entry(arguments.shift.to_i)
 
       tell "Rewording the following entry".colorize(:green)
-      tell "%3d %s" % [ reword_index, entry.inspect ]
-
-      entry.note = arguments[1..-1] * " "
+      tell entry.inspect
+      entry.note = arguments * " "
       tell "into the following".colorize(:green)
-      tell "%3d %s" % [ reword_index, entry.inspect ]
+      tell entry.inspect
 
-      if @confirmed
+      ask_for_confirmation "not actually rewording the specified entry yet" do
         entry.save
-      else
-        tell "not actually rewording the specified entry yet, add --really to confirm".colorize(:yellow)
       end
     end
 
