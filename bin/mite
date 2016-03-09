@@ -8,6 +8,7 @@ begin
   MiteCmd.calling_script = __FILE__
   MiteCmd.run(ARGV)
 rescue MiteCmd::Exception => e
-  puts "#{"Epic fail: #{e.message}".colorize(:color => :red, :background => :black)} Type `mite help` to get help."
+  puts "FATAL - #{e.message}".colorize(:lightred)
+  puts "Type `mite help` to get help."
   exit(1)
 end
