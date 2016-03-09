@@ -14,20 +14,20 @@ I broke all the tests. The time budget didn't quite allow for TDD. Heart is blea
 
 ### Installation instructions:
 
-  $ git clone https://github.com/ffrank/mite.cmd.git
+    $ git clone https://github.com/ffrank/mite.cmd.git
 
-  $ bundle install
+    $ bundle install
 
 ### After installation instructions:
 
 You'll need to configure the client prior using it.
 To do this, you can just hammer into your console:
 
-  $ mite configure "Your Account Name" "Your API Key"
+    $ mite configure "Your Account Name" "Your API Key"
 
 e.g.
 
-  $ mite configure ffrank ab56cd1234
+    $ mite configure ffrank ab56cd1234
 
 It will then generate a yml file in ~/.mite.yml with your account information.
 
@@ -41,25 +41,25 @@ This is actually quite easy, just append this line to your bash config file.
 
 You could use this command as an example (replace .bash_login with your bash configuration file):
 
-  $ echo "complete -C \"mite auto-complete\" mite" >> ~/.bash_login
+    $ echo "complete -C \"mite auto-complete\" mite" >> ~/.bash_login
 
 For a list of other configurables, see
 
-  $ mite help
+    $ mite help
 
 or just edit `~/.mite.yml`.
 
 ### Create new time entries with ease:
 
-  $ mite add <time> "project name" "service name" note
+    $ mite add <time> "project name" "service name" note
   
 #### Examples:
 
-  $ mite add 0:15 HugEveryone
+    $ mite add 0:15 HugEveryone
 
 The time entry created by this command, is made for the project HugEveryone and is set to 15 minutes. No tracker will be started.
   
-  $ mite add 1+ HugEveryone Love
+    $ mite add 1+ HugEveryone Love
 
 Start a time entry for the project HugEveryone with the service Love and set it to 1 hour. The tracker will be started, because of the @start time@ argument was suffixed with a @+@.
 
@@ -104,26 +104,26 @@ This will just stop the current timer. (If you like you can use `mite pause` or 
 
 ### Simple reports:
 
-  $ mite report today
+    $ mite report today
 
 This will generate a report of today's activity, summarizing your earnings at the bottom.
 
-  $ mite report yesterday
+    $ mite report yesterday
 
 This will generate a report of yesterday's activity, summarizing your earnings and the total time at the bottom.
 Also works using @this_week@, @last_week@, @this_month@, @last_month@ as argument.
 
 ### More simple stuff:
 
-  $ mite
+    $ mite
 
 If there is a running timer, it will output it. Otherwise you should better not listen to it.
 
-  $ mite +
+    $ mite +
 
 Just create a new time entry and start tracking it.
 
-  $ mite open
+    $ mite open
 
 Opens your mite account in a new browser window (Max OSX only) or prints the url to your account.
 
