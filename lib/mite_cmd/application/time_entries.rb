@@ -10,9 +10,8 @@ module MiteCmd
 
     def prepare_time_entry(arguments)
       attributes = @default_attributes
-      if @date
-        attributes.merge!(self.parse_date_parameter!)
-      end
+
+      attributes[:date_at] = parse_date_parameter!(@date || 'today')
 
       begin
         attributes.merge! fill_in_time_entry_attributes!(arguments)
@@ -63,18 +62,18 @@ module MiteCmd
     end
 
     # Dates like 'last_week', 'yesterday' etc. are not applicable when posting new entries
-    def parse_date_parameter!
-      case @date
+    def parse_date_parameter!(date)
+      case date
       when 'today'
-        {}
+        DateTime.now.strftime("%Y-%m-%d")
       when 'yesterday'
-        { :date_at => ( DateTime.now - 1 ).strftime("%Y-%m-%d") }
-      when /^\d{4}-\d{2}-\d{2}/
-        { :date_at => @date }
+        ( DateTime.now - 1 ).strftime("%Y-%m-%d")
+      when /^\d{4}-\d{2}-\d{2}$/
+        date
       when 'last_week', 'last_month'
-        raise MiteCmd::Exception.new "the special time format '#{@date}' is not applicable when adding new time entries"
+        raise MiteCmd::Exception.new "the special time format '#{date}' is not applicable when adding new time entries"
       else
-        raise MiteCmd::Exception.new "unrecognized date format '#{@date}'"
+        raise MiteCmd::Exception.new "unrecognized date format '#{date}'"
       end
     end
 
