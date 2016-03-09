@@ -126,15 +126,3 @@ Just create a new time entry and start tracking it.
     $ mite open
 
 Opens your mite account in a new browser window (Max OSX only) or prints the url to your account.
-
-### Feature Request? Problems? Found a bug? Your girlfriend broke up with you?
-
-Your problems are no longer "problems"! They are called issues now, and github has the solution.
-
-If you want to tell me an idea, I'll happily take care of them in the issues tracker: http://github.com/Overbryd/mite.cmd/issues
-
-|\3. **All time Highscore of people who were involved** |
-| who? |\2. what? |
-| Sebastian Munz (yolk) | 12 issues | found a lot of bugs, did some real use testing. Really cool, thank you! |
-| Julia Soergel (juliasoergel) | 2 issues | found a bug and `I like your hairstyle!´ |
-| Michael Bumann (burmi) | 2 issues | found two bugs and mentioned a security issue which is now fixed. Yea baby! |
