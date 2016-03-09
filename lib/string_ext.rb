@@ -32,6 +32,7 @@ String.class_eval do
   }
   def colorize(options={})
     return '' if self == ''
+    return self unless MiteCmd.colorize
     options = {:color => options} if options.is_a?(Symbol)
     options[:color] = :default unless options[:color]
     if options[:color] != :default && options[:color].to_s =~ /^(light|bright)/

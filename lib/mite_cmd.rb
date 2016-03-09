@@ -16,12 +16,13 @@ module MiteCmd
 
   CONFIG_FILE = File.expand_path '~/.mite.yml'
 
-  mattr_accessor :calling_script, :autocomplete_notes, :autocomplete_always_quote
+  mattr_accessor :calling_script, :autocomplete_notes, :autocomplete_always_quote, :colorize
 
   def self.load_configuration
     # defaults
     self.autocomplete_notes = true
     self.autocomplete_always_quote = false
+    self.colorize = true
 
     begin
       load_configuration!
@@ -45,6 +46,10 @@ module MiteCmd
 
     if configuration.has_key? :autocomplete_always_quote
       self.autocomplete_always_quote = configuration[:autocomplete_always_quote]
+    end
+
+    if configuration.has_key? :colorize
+      self.colorize = configuration[:colorize]
     end
   end
 
