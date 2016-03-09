@@ -1,32 +1,24 @@
-<pre>
+# mite.cmd
 
-               _                           _ 
-            (_) |                         | |
-   _ __ ___  _| |_ ___   ___ _ __ ___   __| |
-  | '_ ` _ \| | __/ _ \ / __| '_ ` _ \ / _` |
-  | | | | | | | ||  __/| (__| | | | | | (_| |
-  |_| |_| |_|_|\__\___(_)___|_| |_| |_|\__,_|
-
-</pre>
 A simple command line interface for basic mite tasks.
 
 * @mite.@ is an ingeniously sleek time tracking tool: http://mite.yo.lk
 * @mite.cmd@ is a command line interface for it: http://github.com/Overbryd/mite.cmd
   It provides a system wide command called @mite@.
 
-h3. About this branch
+### About this branch
 
 Lots of changes to the interface for a more streamlined experience by @ffrank, based on the excellent work by @koppen.
 
 I broke all the tests. The time budget didn't quite allow for TDD. Heart is bleading, but here we are.
 
-h3. Installation instructions:
+### Installation instructions:
 
   $ git clone https://github.com/ffrank/mite.cmd.git
 
   $ bundle install
 
-h3. After installation instructions:
+### After installation instructions:
 
 You'll need to configure the client prior using it.
 To do this, you can just hammer into your console:
@@ -57,11 +49,11 @@ For a list of other configurables, see
 
 or just edit `~/.mite.yml`.
 
-h3. Create new time entries with ease:
+### Create new time entries with ease:
 
   $ mite add <time> "project name" "service name" note
   
-h4. Examples:
+#### Examples:
 
   $ mite add 0:15 HugEveryone
 
@@ -71,7 +63,7 @@ The time entry created by this command, is made for the project HugEveryone and 
 
 Start a time entry for the project HugEveryone with the service Love and set it to 1 hour. The tracker will be started, because of the @start time@ argument was suffixed with a @+@.
 
-h3. Auto-completion:
+### Auto-completion:
 
 This is very nifty. (But maybe you should read the After Installation Instructions before.)
 The client was designed to save keystrokes, so I've baked in a very handy auto-completion feature.
@@ -92,15 +84,15 @@ It will try to auto-complete your projects.
     
     $ mite add 0:30 Project1 "System Administration" [tab]
 
-h4. Amazingly fast auto-completion:
+#### Amazingly fast auto-completion:
 
 The auto-completion feature creates a cache in ~/.mite.cache, if you want to rebuild this cache just hit:
   
     $ mite rebuild-cache
 
-h4. Note: The first run without the cache might be a bit slow.
+#### Note: The first run without the cache might be a bit slow.
 
-h3. Controlling timers:
+### Controlling timers:
 
     $ mite start
 
@@ -110,7 +102,7 @@ This little cutey will start today's last time entry, if there is one.
 
 This will just stop the current timer. (If you like you can use `mite pause` or `mite lunch` too)
 
-h3. Simple reports:
+### Simple reports:
 
   $ mite report today
 
@@ -121,7 +113,7 @@ This will generate a report of today's activity, summarizing your earnings at th
 This will generate a report of yesterday's activity, summarizing your earnings and the total time at the bottom.
 Also works using @this_week@, @last_week@, @this_month@, @last_month@ as argument.
 
-h3. More simple stuff:
+### More simple stuff:
 
   $ mite
 
@@ -135,7 +127,7 @@ Just create a new time entry and start tracking it.
 
 Opens your mite account in a new browser window (Max OSX only) or prints the url to your account.
 
-h3. Feature Request? Problems? Found a bug? Your girlfriend broke up with you?
+### Feature Request? Problems? Found a bug? Your girlfriend broke up with you?
 
 Your problems are no longer "problems"! They are called issues now, and github has the solution.
 
