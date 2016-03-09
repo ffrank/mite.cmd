@@ -130,7 +130,7 @@ module MiteCmd::Application
     def command_description_list
       self.class.method_list.map do |command,info|
         info[:arguments] ||= []
-        "%s %s\n    %s" % [ command, [ info[:arguments] ].flatten * " ", info[:description] ]
+        "  %s %s\n    %s" % [ command, [ info[:arguments] ].flatten * " ", info[:description] ]
       end
     end
 
@@ -150,12 +150,9 @@ module MiteCmd::Application
     end
 
     def help(arguments)
-      puts <<-EOH
-usage: mite <command> [arguments]
-
-available commands:
-#{command_description_list * "\n"}
-      EOH
+      tell option_parser.help
+      tell "\navailable commands:"
+      tell command_description_list * "\n"
     end
 
     def open(arguments)
@@ -174,7 +171,8 @@ available commands:
     end
 
     def option_parser
-      OptionParser.new do |opts|
+      @parser ||= OptionParser.new do |opts|
+        opts.banner = "Usage: mite [options] <command> [arguments]\n\noptions:"
         opts.on("-d", "--date DATE",
                 "Create or report on specific day, e.g. today, yesterday, YYYY-MM-DD, ...") { |arg| @date = arg }
         opts.on("-x", "--really",
