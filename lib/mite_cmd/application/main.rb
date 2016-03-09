@@ -14,8 +14,13 @@ module MiteCmd::Application
     include MiteCmd::Application::TimeEntries
 
     def initialize(arguments=[])
-      MiteCmd.load_configuration! unless ['configure', 'help'].include?(arguments.first)
+      if ['configure', 'help'].include?(arguments.first)
+        MiteCmd.load_configuration
+      else
+        MiteCmd.load_configuration! unless ['configure', 'help'].include?(arguments.first)
+      end
       option_parser.parse!(arguments)
+
       @arguments = arguments
       @default_attributes = {}
     end
@@ -36,9 +41,6 @@ module MiteCmd::Application
     private
 
     def configure(arguments)
-      MiteCmd.load_configuration
-      option_parser.parse!(arguments) # again, in case configuration is being overridden
-
       raise MiteCmd::Exception.new('mite configure needs two arguments, the account name and the apikey') if arguments.size < 2
 
       settings = {:account => arguments[0], :apikey => arguments[1]}
