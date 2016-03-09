@@ -14,19 +14,17 @@ A simple command line interface for basic mite tasks.
 * @mite.cmd@ is a command line interface for it: http://github.com/Overbryd/mite.cmd
   It provides a system wide command called @mite@.
 
-!https://travis-ci.org/koppen/mite.cmd.png?branch=master!:https://travis-ci.org/koppen/mite.cmd
-!https://coveralls.io/repos/koppen/mite.cmd/badge.png?branch=master(Coverage Status)!:https://coveralls.io/r/koppen/mite.cmd?branch=master
-"!https://codeclimate.com/github/koppen/mite.cmd.png!":https://codeclimate.com/github/koppen/mite.cmd
+h3. About this branch
+
+Lots of changes to the interface for a more streamlined experience by @ffrank, based on the excellent work by @koppen.
+
+I broke all the tests. The time budget didn't quite allow for TDD. Heart is bleading, but here we are.
 
 h3. Installation instructions:
 
-  $ gem install mite.cmd
-  
-I assume github is in your gem sources. You may need @activesupport@ and @activeresource@ too.
+  $ git clone https://github.com/ffrank/mite.cmd.git
 
-  $ gem install activesupport activeresource
-
-Note: On debian/ubuntu libopenssl-ruby is required.
+  $ bundle install
 
 h3. After installation instructions:
 
@@ -34,6 +32,10 @@ You'll need to configure the client prior using it.
 To do this, you can just hammer into your console:
 
   $ mite configure "Your Account Name" "Your API Key"
+
+e.g.
+
+  $ mite configure ffrank ab56cd1234
 
 It will then generate a yml file in ~/.mite.yml with your account information.
 
@@ -49,94 +51,72 @@ You could use this command as an example (replace .bash_login with your bash con
 
   $ echo "complete -C \"mite auto-complete\" mite" >> ~/.bash_login
 
+For a list of other configurables, see
+
+  $ mite help
+
+or just edit `~/.mite.yml`.
+
 h3. Create new time entries with ease:
 
-  $ mite "project name" "service name" "start time" "note"
+  $ mite add <time> "project name" "service name" note
   
-  $ mite "project name" "service name" "note"
-  
-  $ mite "project name" "start time" "note"
-  
-  $ mite "start time" "note"
-
-h4. The magic of the moment err... start_time:
-
-Append a @+@ to the start time and it will start the tracker.
-
-The most convenient syntax to set the start time is @h:mm@. So it will accept all these kinds of values: @1:15@, @0:01@, @24:00@.
-
-Short-hand for hours:
-* @3+@ will set the start time to 3 hours, and start the tracker
-* @3.5@ will set it to 3 hours 30 minutes
-* @0.25+@ will make you look like a floating-point fetish, and start the tracker
-
 h4. Examples:
 
-  $ mite "World Domination"
-
-This will start a timer for the project World Domination.
-
-  $ mite HugEveryone 0:15
+  $ mite add 0:15 HugEveryone
 
 The time entry created by this command, is made for the project HugEveryone and is set to 15 minutes. No tracker will be started.
   
-  $ mite HugEveryone Love 1+
+  $ mite add 1+ HugEveryone Love
 
 Start a time entry for the project HugEveryone with the service Love and set it to 1 hour. The tracker will be started, because of the @start time@ argument was suffixed with a @+@.
 
-h4. Note:
-
-If a project or a service doesn't exist it will be created.
-You can omit one/some of the arguments, namely: @project name@, @service name@, @note@ or @start time@. But they have to be in order. So you can't set a @service name@ unless you specify a project. This will be fixed in future releases, till then, the arguments rely on their order.
-
-h3. Amazing auto-completion:
+h3. Auto-completion:
 
 This is very nifty. (But maybe you should read the After Installation Instructions before.)
-The client was designed to save keystrokes, so I've baked in a very handy auto-completion feature. It even ignores the typed case.
+The client was designed to save keystrokes, so I've baked in a very handy auto-completion feature.
 
 Try this:
 
     $ mite [tab]
 
+It will try to auto-complete the available commands. 
+
+    $ mite add [tab]
+
+Now it offers up some common times.
+    
+    $ mite add 0:30 [tab]
+
 It will try to auto-complete your projects.
     
-    $ mite Project1 [tab]
-
-It will try to auto-complete your services.
-    
-    $ mite Project1 "System Administration" [tab]
-
-It will try to auto-complete common times!
-    
-    $ mite Project1 "System Administration" 0:48 [tab]
-
-It will try to auto-complete your notes!
+    $ mite add 0:30 Project1 "System Administration" [tab]
 
 h4. Amazingly fast auto-completion:
 
 The auto-completion feature creates a cache in ~/.mite.cache, if you want to rebuild this cache just hit:
   
-		$ mite rebuild-cache
+    $ mite rebuild-cache
 
 h4. Note: The first run without the cache might be a bit slow.
 
 h3. Controlling timers:
 
-	$ mite start
+    $ mite start
 
 This little cutey will start today's last time entry, if there is one.
 
-  $ mite stop
+    $ mite stop
 
 This will just stop the current timer. (If you like you can use `mite pause` or `mite lunch` too)
 
 h3. Simple reports:
 
-  $ mite today
+  $ mite report today
 
 This will generate a report of today's activity, summarizing your earnings at the bottom.
 
-  $ mite yesterday
+  $ mite report yesterday
 
 This will generate a report of yesterday's activity, summarizing your earnings and the total time at the bottom.
 Also works using @this_week@, @last_week@, @this_month@, @last_month@ as argument.
